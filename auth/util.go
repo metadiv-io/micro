@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -16,16 +15,6 @@ const (
 	ERR_MSG_UNAUTHORIZED  = "Unauthorized"
 	ERR_MSG_FORBIDDEN     = "Forbidden"
 )
-
-func GetLogPrefix(ctx *gin.Context) string {
-	traceID := micro.GetTraceID(ctx)
-	var apiUUID string
-	api, ok := micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
-	if ok {
-		apiUUID = api.Tag
-	}
-	return fmt.Sprintf("[%s/%s/%s]", micro.SYSTEM_UUID, apiUUID, traceID)
-}
 
 func GetClaims(ctx *gin.Context) *jwt.Claims {
 	token := GetAuthToken(ctx)
