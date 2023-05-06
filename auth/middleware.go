@@ -28,17 +28,35 @@ func LoginRequired(ctx *gin.Context) {
 		AbortUnauthorized(ctx)
 		return
 	}
-	api, ok := micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
-	if !ok {
-		AbortForbidden(ctx)
-		return
-	}
-	isUsageAllowed := isUsageAllowed(api.Tag, claims.Workspaces)
-	if !isUsageAllowed {
-		AbortForbidden(ctx)
-		return
-	}
 	ctx.Next()
+}
+
+func UsageRequired(method, path string) gin.HandlerFunc {
+	micro.API_MAP[method+":"+path] = micro.Api{
+		Tag: method + ":" + path,
+	}
+	return func(ctx *gin.Context) {
+		claims := GetClaims(ctx)
+		if claims == nil {
+			AbortUnauthorized(ctx)
+			return
+		}
+		if claims.TokenType != jwt.TOKEN_TYPE_ACCESS_TOKEN && claims.TokenType != jwt.TOKEN_TYPE_API_TOKEN {
+			AbortUnauthorized(ctx)
+			return
+		}
+		api, ok := micro.API_MAP[method+":"+path]
+		if !ok {
+			AbortForbidden(ctx)
+			return
+		}
+		isUsageAllowed := isUsageAllowed(api.Tag, claims.Workspaces)
+		if !isUsageAllowed {
+			AbortForbidden(ctx)
+			return
+		}
+		ctx.Next()
+	}
 }
 
 func RefreshTokenOnly(ctx *gin.Context) {
