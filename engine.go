@@ -91,7 +91,7 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 				SystemUUID: SYSTEM_UUID,
 				SystemName: SYSTEM_NAME,
 				TraceID:    traceID,
-				Duration:   uint(time.Since(now).Seconds()),
+				Duration:   uint(time.Since(now).Microseconds()),
 				Credit:     credit,
 				Error: &Error{
 					Code:    err.Code(),
@@ -105,7 +105,7 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 			Success:    true,
 			Time:       time.Now().Format("2006-01-02 15:04:05"),
 			TraceID:    traceID,
-			Duration:   uint(time.Since(now).Seconds()),
+			Duration:   uint(time.Since(now).Microseconds()),
 			Credit:     credit,
 			SystemUUID: SYSTEM_UUID,
 			SystemName: SYSTEM_NAME,
