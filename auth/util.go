@@ -53,7 +53,7 @@ func GetAuthToken(ctx *gin.Context) string {
 	return t
 }
 
-func abortUnauthorized(ctx *gin.Context) {
+func AbortUnauthorized(ctx *gin.Context) {
 	traceID := micro.GetTraceID(ctx)
 	traces := micro.GetTraces(ctx)
 	traces = append(traces, micro.Trace{
@@ -86,7 +86,7 @@ func abortUnauthorized(ctx *gin.Context) {
 	})
 }
 
-func abortForbidden(ctx *gin.Context) {
+func AbortForbidden(ctx *gin.Context) {
 	traceID := micro.GetTraceID(ctx)
 	traces := micro.GetTraces(ctx)
 	traces = append(traces, micro.Trace{

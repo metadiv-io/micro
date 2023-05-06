@@ -9,43 +9,33 @@ import (
 func SystemAdminOnly(ctx *gin.Context) {
 	claims := GetClaims(ctx)
 	if claims == nil {
-		abortUnauthorized(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 	if claims.TokenType != jwt.TOKEN_TYPE_ADMIN_TOKEN && claims.TokenType != jwt.TOKEN_TYPE_SYSTEM_TOKEN {
-		abortUnauthorized(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 }
 
 func LoginRequired(ctx *gin.Context) {
-	micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()] = micro.Api{
-		Tag:    ctx.Request.Method + ":" + ctx.FullPath(),
-		UUID:   "",
-		Credit: 0,
-	}
 	claims := GetClaims(ctx)
 	if claims == nil {
-		abortUnauthorized(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 	if claims.TokenType != jwt.TOKEN_TYPE_ACCESS_TOKEN && claims.TokenType != jwt.TOKEN_TYPE_API_TOKEN {
-		abortUnauthorized(ctx)
-		return
-	}
-	isAllowed := isAllowed(claims.AuthMap)
-	if !isAllowed {
-		abortForbidden(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 	api, ok := micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
 	if !ok {
-		abortForbidden(ctx)
+		AbortForbidden(ctx)
 		return
 	}
-	isUsageAllowed := isUsageAllowed(api.Tag, claims.AuthMap)
+	isUsageAllowed := isUsageAllowed(api.Tag, claims.Workspaces)
 	if !isUsageAllowed {
-		abortForbidden(ctx)
+		AbortForbidden(ctx)
 		return
 	}
 	ctx.Next()
@@ -54,11 +44,11 @@ func LoginRequired(ctx *gin.Context) {
 func RefreshTokenOnly(ctx *gin.Context) {
 	claims := GetClaims(ctx)
 	if claims == nil {
-		abortUnauthorized(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 	if claims.TokenType != jwt.TOKEN_TYPE_REFRESH_TOKEN {
-		abortUnauthorized(ctx)
+		AbortUnauthorized(ctx)
 		return
 	}
 }

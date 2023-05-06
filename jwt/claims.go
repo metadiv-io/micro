@@ -1,20 +1,29 @@
 package jwt
 
 type Claims struct {
-	UUID      string              `json:"uuid"`
-	Name      string              `json:"name"`
-	IP        string              `json:"ip"`
-	TokenType string              `json:"token_type"`
-	AuthMap   map[string][]string `json:"auth_map"` // map[workspace_uuid][][auth_group_uuid...]
+	UUID       string   `json:"uuid"`
+	Name       string   `json:"name"`
+	IP         string   `json:"ip"`
+	TokenType  string   `json:"token_type"`
+	Workspaces []string `json:"workspaces"`
 }
 
 // NewClaims creates a new Claims.
-func NewClaims(uuid, name, ip, tokenType string, authMap map[string][]string) *Claims {
+func NewClaims(uuid, name, ip, tokenType string, workspaces []string) *Claims {
 	return &Claims{
-		UUID:      uuid,
-		Name:      name,
-		IP:        ip,
-		TokenType: tokenType,
-		AuthMap:   authMap,
+		UUID:       uuid,
+		Name:       name,
+		IP:         ip,
+		TokenType:  tokenType,
+		Workspaces: workspaces,
 	}
+}
+
+func (c *Claims) HasWorkspace(workspace string) bool {
+	for _, ws := range c.Workspaces {
+		if ws == workspace {
+			return true
+		}
+	}
+	return false
 }
