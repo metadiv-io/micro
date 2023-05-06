@@ -14,8 +14,8 @@ const (
 )
 
 var (
-	USER_TOKEN_PUBLIC_PEM   string
-	SYSTEM_TOKEN_PUBLIC_PEM string
+	USER_PUBLIC_PEM   string
+	SYSTEM_PUBLIC_PEM string
 )
 
 var (

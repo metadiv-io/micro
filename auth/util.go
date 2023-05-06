@@ -34,10 +34,10 @@ func GetClaims(ctx *gin.Context) *jwt.Claims {
 	var claims *jwt.Claims
 	var err error
 	// try to parse token with user token public key
-	claims, err = jwt.ParseWithPublicKey(token, micro.USER_TOKEN_PUBLIC_PEM)
+	claims, err = jwt.ParseWithPublicKey(token, micro.USER_PUBLIC_PEM)
 	if err != nil || claims == nil {
 		// try to parse token with system token public key
-		claims, err = jwt.ParseWithPublicKey(token, micro.SYSTEM_TOKEN_PUBLIC_PEM)
+		claims, err = jwt.ParseWithPublicKey(token, micro.SYSTEM_PUBLIC_PEM)
 		if err != nil || claims == nil {
 			return nil
 		}
