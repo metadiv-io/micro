@@ -5,16 +5,25 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/metadiv-io/err_map"
 	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/jwt"
 )
 
 const (
-	ERR_CODE_UNAUTHORIZED = "b97cf20d-42b6-470e-9e08-b4bb852c3811"
-	ERR_CODE_FORBIDDEN    = "7792176d-0196-4a57-a959-93062c2b9b41"
-	ERR_MSG_UNAUTHORIZED  = "Unauthorized"
-	ERR_MSG_FORBIDDEN     = "Forbidden"
+	ERR_CODE_UNAUTHORIZED     = "b97cf20d-42b6-470e-9e08-b4bb852c3811"
+	ERR_CODE_FORBIDDEN        = "7792176d-0196-4a57-a959-93062c2b9b41"
+	ERR_INTERNAL_SERVER_ERROR = "b6a82bc6-5884-41e1-8b6f-1a013b7da835"
+	ERR_MSG_UNAUTHORIZED      = "Unauthorized"
+	ERR_MSG_FORBIDDEN         = "Forbidden"
+	ERR_MSG_INTERNAL_SERVER   = "Internal Server Error"
 )
+
+func init() {
+	err_map.Register(ERR_CODE_UNAUTHORIZED, ERR_MSG_UNAUTHORIZED)
+	err_map.Register(ERR_CODE_FORBIDDEN, ERR_MSG_FORBIDDEN)
+	err_map.Register(ERR_INTERNAL_SERVER_ERROR, ERR_MSG_INTERNAL_SERVER)
+}
 
 func GetClaims(ctx *gin.Context) *jwt.Claims {
 	token := GetAuthToken(ctx)
