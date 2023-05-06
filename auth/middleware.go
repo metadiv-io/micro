@@ -19,6 +19,11 @@ func SystemAdminOnly(ctx *gin.Context) {
 }
 
 func LoginRequired(ctx *gin.Context) {
+	micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()] = micro.Api{
+		Tag:    ctx.Request.Method + ":" + ctx.FullPath(),
+		UUID:   "",
+		Credit: 0,
+	}
 	claims := GetClaims(ctx)
 	if claims == nil {
 		abortUnauthorized(ctx)
