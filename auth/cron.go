@@ -29,8 +29,8 @@ func pingAuthCron() {
 		return
 	}
 	micro.API_MAP = resp.Data.ApiMap
-	micro.SYSTEM_PUBLIC_PEM = resp.Data.SystemPublicPem
-	micro.USER_PUBLIC_PEM = resp.Data.UserPublicPem
+	SYSTEM_PUBLIC_PEM = resp.Data.SystemPublicPem
+	USER_PUBLIC_PEM = resp.Data.UserPublicPem
 }
 
 func SetupPingAuthCron(e *micro.Engine) {

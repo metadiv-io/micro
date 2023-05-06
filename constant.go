@@ -24,8 +24,6 @@ var (
 	SYSTEM_TOKEN      string
 	AUTH_SERVICE_URL  string
 	USAGE_SERVICE_URL string
-	USER_PUBLIC_PEM   string
-	SYSTEM_PUBLIC_PEM string
 )
 
 func init() {
