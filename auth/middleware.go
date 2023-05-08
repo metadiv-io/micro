@@ -9,13 +9,14 @@ import (
 func SystemAdminOnly(ctx *gin.Context) {
 	claims := GetClaims(ctx)
 	if claims == nil {
+		if isSystemAllowed(ctx.ClientIP()) {
+			ctx.Next()
+			return
+		}
 		AbortUnauthorized(ctx)
 		return
 	}
-	if claims.TokenType != jwt.TOKEN_TYPE_ADMIN_TOKEN && claims.TokenType != jwt.TOKEN_TYPE_SYSTEM_TOKEN {
-		AbortUnauthorized(ctx)
-		return
-	}
+	ctx.Next()
 }
 
 func LoginRequired(ctx *gin.Context) {
