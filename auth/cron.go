@@ -22,9 +22,7 @@ func pingAuthCron() {
 		SystemUUID: micro.SYSTEM_UUID,
 		SystemName: micro.SYSTEM_NAME,
 		ApiMap:     micro.API_MAP,
-	}, map[string]string{
-		"Authorization": "Bearer " + micro.SYSTEM_TOKEN,
-	}, "", nil)
+	}, map[string]string{}, "", nil)
 	if err != nil || resp == nil || !resp.Success {
 		return
 	}
@@ -42,9 +40,7 @@ func pingUsageCron() {
 		SystemUUID: micro.SYSTEM_UUID,
 		SystemName: micro.SYSTEM_NAME,
 		ApiMap:     micro.API_MAP,
-	}, map[string]string{
-		"Authorization": "Bearer " + micro.SYSTEM_TOKEN,
-	}, "", nil)
+	}, map[string]string{}, "", nil)
 	if err != nil || resp == nil || !resp.Success {
 		return
 	}

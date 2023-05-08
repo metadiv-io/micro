@@ -21,7 +21,6 @@ var (
 var (
 	SYSTEM_UUID       string
 	SYSTEM_NAME       string
-	SYSTEM_TOKEN      string
 	AUTH_SERVICE_URL  string
 	USAGE_SERVICE_URL string
 )
@@ -34,10 +33,6 @@ func init() {
 	SYSTEM_NAME = env.String("SYSTEM_NAME", "")
 	if SYSTEM_NAME == "" {
 		panic("SYSTEM_NAME is required")
-	}
-	SYSTEM_TOKEN = env.String("SYSTEM_TOKEN", "")
-	if SYSTEM_TOKEN == "" {
-		panic("SYSTEM_TOKEN is required")
 	}
 	AUTH_SERVICE_URL = env.String("AUTH_SERVICE_URL", "")
 	if AUTH_SERVICE_URL == "" {

@@ -18,9 +18,7 @@ func isUsageAllowed(apiUUID string, workspaces []string) bool {
 	resp, err := call.POST[UsageResponse](micro.USAGE_SERVICE_URL+"/micro/allowed", &UsageRequest{
 		ApiUUID:    apiUUID,
 		Workspaces: workspaces,
-	}, map[string]string{
-		"Authorization": "Bearer " + micro.SYSTEM_TOKEN,
-	}, "", nil)
+	}, map[string]string{}, "", nil)
 	if err != nil || resp == nil || !resp.Success {
 		return false
 	}
