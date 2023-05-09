@@ -36,7 +36,7 @@ func init() {
 var API_MAP = make(map[string]Api)
 
 type Api struct {
-	Tag    string
-	UUID   string
-	Credit float64
+	Tag    string  `json:"tag"`
+	UUID   string  `json:"uuid"`
+	Credit float64 `json:"credit"`
 }
