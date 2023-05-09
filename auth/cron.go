@@ -17,7 +17,7 @@ type RegisterResponse struct {
 }
 
 func registerCron() {
-	resp, err := call.POST[RegisterResponse](nil, AUTH_SERVICE_URL+"/micro/ping", &RegisterRequest{
+	resp, err := call.POST[RegisterResponse](nil, AUTH_SERVICE_URL+"/register", &RegisterRequest{
 		SystemUUID: micro.SYSTEM_UUID,
 		SystemName: micro.SYSTEM_NAME,
 		ApiMap:     micro.API_MAP,
