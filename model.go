@@ -56,13 +56,3 @@ type WSHandler[T any] func() WSHandlerResponse[T]
 type WSHandlerResponse[T any] struct {
 	Service WSService[T]
 }
-
-// Api
-
-var API_MAP = make(map[string]Api)
-
-type Api struct {
-	Tag    string
-	UUID   string
-	Credit float64
-}

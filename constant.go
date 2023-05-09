@@ -8,21 +8,17 @@ const (
 	tag_form = "form"
 )
 
+// These are the headers for micro services.
 const (
-	MICRO_HEADER_TRACE_ID = "Micro-TraceID"
-	MICRO_HEADER_TRACES   = "Micro-Traces"
+	MICRO_HEADER_TRACE_ID  = "Micro-TraceID"
+	MICRO_HEADER_TRACES    = "Micro-Traces"
+	MICRO_HEADER_WORKSPACE = "Micro-Workspace"
 )
 
+// These are the base info for the micro service.
 var (
-	USER_PUBLIC_PEM   string
-	SYSTEM_PUBLIC_PEM string
-)
-
-var (
-	SYSTEM_UUID       string
-	SYSTEM_NAME       string
-	AUTH_SERVICE_URL  string
-	USAGE_SERVICE_URL string
+	SYSTEM_UUID string
+	SYSTEM_NAME string
 )
 
 func init() {
@@ -34,12 +30,13 @@ func init() {
 	if SYSTEM_NAME == "" {
 		panic("SYSTEM_NAME is required")
 	}
-	AUTH_SERVICE_URL = env.String("AUTH_SERVICE_URL", "")
-	if AUTH_SERVICE_URL == "" {
-		panic("AUTH_SERVICE_URL is required")
-	}
-	USAGE_SERVICE_URL = env.String("USAGE_SERVICE_URL", "")
-	if USAGE_SERVICE_URL == "" {
-		panic("USAGE_SERVICE_URL is required")
-	}
+}
+
+// This map store the api uuid and info.
+var API_MAP = make(map[string]Api)
+
+type Api struct {
+	Tag    string
+	UUID   string
+	Credit float64
 }

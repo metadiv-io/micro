@@ -35,3 +35,19 @@ func SetTraces(c *gin.Context, traces []Trace) {
 	b, _ := json.Marshal(traces)
 	c.Request.Header.Set(MICRO_HEADER_TRACES, string(b))
 }
+
+func GetWorkspace(c *gin.Context) string {
+	return c.GetHeader(MICRO_HEADER_WORKSPACE)
+}
+
+func SetWorkspace(c *gin.Context, workspace string) {
+	c.Request.Header.Set(MICRO_HEADER_WORKSPACE, workspace)
+}
+
+func GetApiUUID(c *gin.Context) string {
+	info, ok := API_MAP[c.Request.Method+":"+c.FullPath()]
+	if ok {
+		return info.Tag
+	}
+	return ""
+}

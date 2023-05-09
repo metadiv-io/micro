@@ -25,28 +25,48 @@ func NewEngine() *Engine {
 
 func (e *Engine) Run(addr string) {
 	e.CronWorker.Start()
-	GET(e, "/micro/ping", PingHandler, ginmid.RateLimited(time.Minute, 30))
+	GET(e, "/ping", "fe37e612-7f0c-463f-8312-b4897fa14a3f", PingHandler, ginmid.RateLimited(time.Minute, 30))
 	e.GinEngine.Run(addr)
 }
 
-func GET[T any](engine *Engine, route string, handler Handler[T], middleware ...gin.HandlerFunc) {
+func GET[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
+	API_MAP["GET:"+route] = Api{
+		Tag:  "GET:" + route,
+		UUID: uuid,
+	}
 	engine.GinEngine.GET(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
-func GETWithCache[T any](engine *Engine, route string, cacheDuration time.Duration, handler Handler[T], middleware ...gin.HandlerFunc) {
+func GETWithCache[T any](engine *Engine, route, uuid string, cacheDuration time.Duration, handler Handler[T], middleware ...gin.HandlerFunc) {
+	API_MAP["GET:"+route] = Api{
+		Tag:  "GET:" + route,
+		UUID: uuid,
+	}
 	engine.GinEngine.GET(route, joinMiddlewareAndService(
 		ginmid.Cache(cacheDuration, newGinServiceHandler(engine, handler)), middleware...)...)
 }
 
-func POST[T any](engine *Engine, route string, handler Handler[T], middleware ...gin.HandlerFunc) {
+func POST[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
+	API_MAP["POST:"+route] = Api{
+		Tag:  "POST:" + route,
+		UUID: uuid,
+	}
 	engine.GinEngine.POST(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
-func PUT[T any](engine *Engine, route string, handler Handler[T], middleware ...gin.HandlerFunc) {
+func PUT[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
+	API_MAP["PUT:"+route] = Api{
+		Tag:  "PUT:" + route,
+		UUID: uuid,
+	}
 	engine.GinEngine.PUT(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
-func DELETE[T any](engine *Engine, route string, handler Handler[T], middleware ...gin.HandlerFunc) {
+func DELETE[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
+	API_MAP["DELETE:"+route] = Api{
+		Tag:  "DELETE:" + route,
+		UUID: uuid,
+	}
 	engine.GinEngine.DELETE(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
@@ -63,7 +83,7 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 	return func(c *gin.Context) {
 		now := time.Now()
 		var credit float64
-		api, ok := API_MAP[c.Request.Method+c.FullPath()]
+		api, ok := API_MAP[c.Request.Method+":"+c.FullPath()]
 		if ok {
 			credit = api.Credit
 		}

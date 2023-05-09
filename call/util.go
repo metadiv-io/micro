@@ -5,16 +5,25 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/metadiv-io/micro"
 )
 
-func get[T any](url string, params map[string]string, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
+func get[T any](ctx *gin.Context, url string, params map[string]string, headers map[string]string) (*Response[T], error) {
+	var traceID, workspace string
+	var traces []micro.Trace
+	if ctx != nil {
+		traceID = micro.GetTraceID(ctx)
+		traces = micro.GetTraces(ctx)
+		workspace = micro.GetWorkspace(ctx)
+	}
 	if headers == nil {
 		headers = make(map[string]string)
 	}
 	headers[micro.MICRO_HEADER_TRACE_ID] = traceID
 	tracesStr, _ := json.Marshal(traces)
 	headers[micro.MICRO_HEADER_TRACES] = string(tracesStr)
+	headers[micro.MICRO_HEADER_WORKSPACE] = workspace
 	url += "?"
 	for k, v := range params {
 		url += k + "=" + v + "&"
@@ -41,16 +50,30 @@ func get[T any](url string, params map[string]string, headers map[string]string,
 		return nil, err
 	}
 
+	if ctx != nil {
+		micro.SetTraceID(ctx, traceID)
+		micro.SetTraces(ctx, traces)
+		micro.SetWorkspace(ctx, workspace)
+	}
+
 	return &response, nil
 }
 
-func nonGet[T any](url string, method string, body interface{}, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
+func nonGet[T any](ctx *gin.Context, url string, method string, body interface{}, headers map[string]string) (*Response[T], error) {
+	var traceID, workspace string
+	var traces []micro.Trace
+	if ctx != nil {
+		traceID = micro.GetTraceID(ctx)
+		traces = micro.GetTraces(ctx)
+		workspace = micro.GetWorkspace(ctx)
+	}
 	if headers == nil {
 		headers = make(map[string]string)
 	}
 	headers[micro.MICRO_HEADER_TRACE_ID] = traceID
 	tracesStr, _ := json.Marshal(traces)
 	headers[micro.MICRO_HEADER_TRACES] = string(tracesStr)
+	headers[micro.MICRO_HEADER_WORKSPACE] = workspace
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -74,6 +97,12 @@ func nonGet[T any](url string, method string, body interface{}, headers map[stri
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
+	}
+
+	if ctx != nil {
+		micro.SetTraceID(ctx, traceID)
+		micro.SetTraces(ctx, traces)
+		micro.SetWorkspace(ctx, workspace)
 	}
 
 	return &response, nil

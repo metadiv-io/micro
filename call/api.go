@@ -1,23 +1,25 @@
 package call
 
-import "github.com/metadiv-io/micro"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // GET make a GET request with micro trace standard
-func GET[T any](url string, params map[string]string, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
-	return get[T](url, params, headers, traceID, traces)
+func GET[T any](ctx *gin.Context, url string, params map[string]string, headers map[string]string) (*Response[T], error) {
+	return get[T](ctx, url, params, headers)
 }
 
 // POST make a POST request with micro trace standard
-func POST[T any](url string, body interface{}, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
-	return nonGet[T](url, "POST", body, headers, traceID, traces)
+func POST[T any](ctx *gin.Context, url string, body interface{}, headers map[string]string) (*Response[T], error) {
+	return nonGet[T](ctx, url, "POST", body, headers)
 }
 
 // PUT make a PUT request with micro trace standard
-func PUT[T any](url string, body interface{}, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
-	return nonGet[T](url, "PUT", body, headers, traceID, traces)
+func PUT[T any](ctx *gin.Context, url string, body interface{}, headers map[string]string) (*Response[T], error) {
+	return nonGet[T](ctx, url, "PUT", body, headers)
 }
 
 // DELETE make a DELETE request with micro trace standard
-func DELETE[T any](url string, body interface{}, headers map[string]string, traceID string, traces []micro.Trace) (*Response[T], error) {
-	return nonGet[T](url, "DELETE", body, headers, traceID, traces)
+func DELETE[T any](ctx *gin.Context, url string, body interface{}, headers map[string]string) (*Response[T], error) {
+	return nonGet[T](ctx, url, "DELETE", body, headers)
 }
