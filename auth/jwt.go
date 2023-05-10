@@ -95,12 +95,20 @@ func ParseToken(token string, publicPEM string) (claims *JwtClaim, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse token: parse with claims: %w", err)
 	}
+	var ips = make([]string, 0)
+	for _, v := range mapClaims["ips"].([]interface{}) {
+		ips = append(ips, v.(string))
+	}
+	var workspaces = make([]string, 0)
+	for _, v := range mapClaims["workspaces"].([]interface{}) {
+		workspaces = append(workspaces, v.(string))
+	}
 	claims = &JwtClaim{
 		UUID:       mapClaims["uuid"].(string),
 		Name:       mapClaims["name"].(string),
 		Type:       mapClaims["type"].(string),
-		IPs:        mapClaims["ips"].([]string),
-		Workspaces: mapClaims["workspaces"].([]string),
+		IPs:        ips,
+		Workspaces: workspaces,
 	}
 	return claims, nil
 }
