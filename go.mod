@@ -10,6 +10,7 @@ require (
 	github.com/metadiv-io/env v1.0.0
 	github.com/metadiv-io/err_map v1.0.0
 	github.com/metadiv-io/ginmid v1.0.1
+	github.com/metadiv-io/logger v1.0.0
 	github.com/metadiv-io/pwd v1.0.0
 	github.com/metadiv-io/sql v1.0.0
 	github.com/robfig/cron v1.2.0

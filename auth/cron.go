@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/metadiv-io/logger"
 	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/call"
 )
@@ -22,7 +23,16 @@ func registerCron() {
 		SystemName: micro.SYSTEM_NAME,
 		ApiMap:     micro.API_MAP,
 	}, map[string]string{})
-	if err != nil || resp == nil || !resp.Success {
+	if err != nil {
+		logger.Error("register cron", err.Error())
+		return
+	}
+	if resp == nil {
+		logger.Error("register cron", "response is nil")
+		return
+	}
+	if !resp.Success && resp.Error != nil {
+		logger.Error("register cron", resp.Error.Message)
 		return
 	}
 	micro.API_MAP = resp.Data.ApiMap
