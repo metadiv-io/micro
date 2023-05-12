@@ -39,6 +39,9 @@ func registerCron() {
 	JWT_PUBLIC_PEM = resp.Data.JwtPublicPem
 }
 
-func SetupRegisterCron(e *micro.Engine) {
+func SetupRegisterCron(e *micro.Engine, initExec bool) {
+	if initExec {
+		registerCron()
+	}
 	micro.Cron(e, "@every 1m", registerCron)
 }
