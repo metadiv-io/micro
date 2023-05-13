@@ -17,6 +17,9 @@ type Engine struct {
 }
 
 func NewEngine() *Engine {
+	e := gin.Default()
+	e.RemoteIPHeaders = append(e.RemoteIPHeaders, "True-Client-IP")
+	e.ForwardedByClientIP = true
 	return &Engine{
 		GinEngine:  gin.Default(),
 		CronWorker: cron.New(),
