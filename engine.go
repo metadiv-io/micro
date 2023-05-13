@@ -87,11 +87,8 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 		if ok {
 			credit = api.Credit
 		}
-		traces := GetTraces(c)
-		if len(traces) == 0 {
-			traces = make([]Trace, 0)
-		}
 		traceID := GetTraceID(c)
+		SetTraceID(c, traceID)
 		ctx := &Context[T]{
 			GinContext: c,
 			Request:    GinRequest[T](c),
@@ -104,6 +101,7 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 			ctx.Sort = GinRequest[sql.Sort](c)
 		}
 		resp, err := handlerSetup.Service(ctx)
+		traces := GetTraces(c)
 		if err != nil {
 			traces = append(traces, Trace{
 				Success:    false,
