@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/metadiv-io/env"
 	"github.com/metadiv-io/micro"
@@ -8,12 +10,16 @@ import (
 )
 
 func AdminOnly(ctx *gin.Context) {
-	claims := GetAuthClaims(ctx)
-	if claims != nil && claims.Type == JWT_TYPE_ADMIN {
+	if isMicro(ctx) {
 		ctx.Next()
 		return
 	}
-	if isMicro(ctx) {
+	claims := GetAuthClaims(ctx)
+	if claims != nil && claims.Type == JWT_TYPE_ADMIN {
+		if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
+			AbortUnauthorized(ctx)
+			return
+		}
 		ctx.Next()
 		return
 	}
@@ -29,11 +35,9 @@ func UserOnly(ctx *gin.Context) {
 				AbortUnauthorized(ctx)
 				return
 			}
-			if env.String("GIN_MODE", "") != "debug" {
-				if !claims.HasIP(ctx.ClientIP()) {
-					AbortUnauthorized(ctx)
-					return
-				}
+			if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
+				AbortUnauthorized(ctx)
+				return
 			}
 			ctx.Next()
 			return
@@ -89,7 +93,20 @@ type IsMicroResponse struct {
 	Allowed bool `json:"allowed"`
 }
 
+var isMicroCache = make(map[string]bool)
+var microCacheExpiry = time.Now().Add(5 * time.Minute)
+
 func isMicro(ctx *gin.Context) bool {
+	if env.String("GIN_MODE", "") == "debug" {
+		return true
+	}
+	if time.Now().After(microCacheExpiry) {
+		isMicroCache = make(map[string]bool)
+		microCacheExpiry = time.Now().Add(5 * time.Minute)
+	}
+	if isMicroCache[ctx.ClientIP()] {
+		return true
+	}
 	resp, err := call.POST[IsMicroResponse](ctx, AUTH_SERVICE_URL+"/micro", &IsMicroRequest{
 		IP: ctx.ClientIP(),
 	}, nil)
@@ -99,5 +116,6 @@ func isMicro(ctx *gin.Context) bool {
 	if !resp.Data.Allowed {
 		return false
 	}
+	isMicroCache[ctx.ClientIP()] = true
 	return true
 }
