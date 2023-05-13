@@ -21,7 +21,7 @@ func NewEngine() *Engine {
 	e.RemoteIPHeaders = append(e.RemoteIPHeaders, "True-Client-IP")
 	e.ForwardedByClientIP = true
 	return &Engine{
-		GinEngine:  gin.Default(),
+		GinEngine:  e,
 		CronWorker: cron.New(),
 	}
 }
