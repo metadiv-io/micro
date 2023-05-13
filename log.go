@@ -13,5 +13,5 @@ func GetLogPrefix(ctx *gin.Context) string {
 	if ok {
 		apiUUID = api.Tag
 	}
-	return fmt.Sprintf("[%s/%s/%s@%s]", SYSTEM_UUID, apiUUID, traceID, ctx.ClientIP())
+	return fmt.Sprintf("[system:%s] [api:%s] [trace:%s] [ip:%s]", SYSTEM_UUID, apiUUID, traceID, ctx.ClientIP())
 }
