@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/metadiv-io/env"
 	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/call"
 )
@@ -28,9 +29,11 @@ func UserOnly(ctx *gin.Context) {
 				AbortUnauthorized(ctx)
 				return
 			}
-			if !claims.HasIP(ctx.ClientIP()) {
-				AbortUnauthorized(ctx)
-				return
+			if env.String("GIN_MODE", "") != "debug" {
+				if !claims.HasIP(ctx.ClientIP()) {
+					AbortUnauthorized(ctx)
+					return
+				}
 			}
 			ctx.Next()
 			return
