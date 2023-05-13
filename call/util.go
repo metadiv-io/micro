@@ -52,7 +52,7 @@ func get[T any](ctx *gin.Context, url string, params map[string]string, headers 
 
 	if ctx != nil {
 		micro.SetTraceID(ctx, traceID)
-		micro.SetTraces(ctx, traces)
+		micro.SetTraces(ctx, response.Traces)
 		micro.SetWorkspace(ctx, workspace)
 	}
 
@@ -101,7 +101,7 @@ func nonGet[T any](ctx *gin.Context, url string, method string, body interface{}
 
 	if ctx != nil {
 		micro.SetTraceID(ctx, traceID)
-		micro.SetTraces(ctx, traces)
+		micro.SetTraces(ctx, response.Traces)
 		micro.SetWorkspace(ctx, workspace)
 	}
 
