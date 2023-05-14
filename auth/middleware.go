@@ -50,41 +50,6 @@ func UserOnly(ctx *gin.Context) {
 	AbortUnauthorized(ctx)
 }
 
-type UsageRequest struct {
-	ApiUUID   string `json:"api_uuid"`
-	TokenUUID string `json:"user_uuid"`
-}
-
-type UsageResponse struct {
-	Allowed bool `json:"allowed"`
-}
-
-func UsageRequired(ctx *gin.Context) {
-	claims := GetAuthClaims(ctx)
-	if claims == nil {
-		AbortUnauthorized(ctx)
-		return
-	}
-	apiUUID := micro.GetApiUUID(ctx)
-	if apiUUID == "" {
-		AbortForbidden(ctx)
-		return
-	}
-	resp, err := call.POST[UsageResponse](ctx, AUTH_SERVICE_URL+"/usage", &UsageRequest{
-		ApiUUID:   apiUUID,
-		TokenUUID: claims.UUID,
-	}, nil)
-	if err != nil || resp == nil || !resp.Success {
-		AbortForbidden(ctx)
-		return
-	}
-	if !resp.Data.Allowed {
-		AbortForbidden(ctx)
-		return
-	}
-	ctx.Next()
-}
-
 type IsMicroRequest struct {
 	IP string `json:"ip"`
 }
