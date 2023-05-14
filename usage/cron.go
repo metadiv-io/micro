@@ -7,8 +7,8 @@ import (
 )
 
 type Consumption struct {
-	WorkspaceUUID string  `json:"workspace_uuid"`
-	Credit        float64 `json:"credit"`
+	SubscriptionUUID string  `json:"subscription_uuid"`
+	Credit           float64 `json:"credit"`
 }
 
 type SendConsumptionRequest struct {
@@ -17,10 +17,10 @@ type SendConsumptionRequest struct {
 
 func sendConsumptionCron() {
 	var consumptions []Consumption
-	for workspaceUUID, consumption := range cachedConsumption {
+	for subscriptionUUID, consumption := range cachedConsumption {
 		consumptions = append(consumptions, Consumption{
-			WorkspaceUUID: workspaceUUID,
-			Credit:        consumption,
+			SubscriptionUUID: subscriptionUUID,
+			Credit:           consumption,
 		})
 	}
 	if len(consumptions) > 0 {

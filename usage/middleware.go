@@ -10,8 +10,9 @@ import (
 )
 
 type UsageResponse struct {
-	Allowed bool    `json:"allowed"`
-	Credit  float64 `json:"credit"`
+	Allowed          bool    `json:"allowed"`
+	Credit           float64 `json:"credit"`
+	SubscriptionUUID string  `json:"subscription_uuid"`
 }
 
 type Usage struct {

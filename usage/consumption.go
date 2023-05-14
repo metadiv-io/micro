@@ -2,11 +2,11 @@ package usage
 
 var cachedConsumption = make(map[string]float64)
 
-func addConsumption(workspaceUUID string, consumption float64) {
-	_, ok := cachedConsumption[workspaceUUID]
+func addConsumption(subscriptionUUID string, consumption float64) {
+	_, ok := cachedConsumption[subscriptionUUID]
 	if !ok {
-		cachedConsumption[workspaceUUID] = consumption
+		cachedConsumption[subscriptionUUID] = consumption
 	} else {
-		cachedConsumption[workspaceUUID] += consumption
+		cachedConsumption[subscriptionUUID] += consumption
 	}
 }
