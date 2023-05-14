@@ -22,7 +22,7 @@ type Usage struct {
 var cachedUsage = make(map[string]map[string]*UsageResponse)
 var clearCachedUsageAt time.Time
 
-func queryUsage(workspaceUUID, apiUUID string) (*UsageResponse, error) {
+func queryUsage(ctx *gin.Context, workspaceUUID, apiUUID string) (*UsageResponse, error) {
 	if clearCachedUsageAt.Before(time.Now()) {
 		cachedUsage = make(map[string]map[string]*UsageResponse)
 		clearCachedUsageAt = time.Now().Add(15 * time.Minute)
@@ -51,6 +51,9 @@ func queryUsage(workspaceUUID, apiUUID string) (*UsageResponse, error) {
 			cachedUsage[workspaceUUID] = make(map[string]*UsageResponse)
 		}
 		cachedUsage[workspaceUUID][apiUUID] = resp.Data
+		api := micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
+		api.Credit = resp.Data.Credit
+		micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()] = api
 		return resp.Data, nil
 	}
 
@@ -73,7 +76,7 @@ func UsageRequired(ctx *gin.Context) {
 		auth.AbortForbidden(ctx)
 		return
 	}
-	usage, err := queryUsage(workspace, apiUUID)
+	usage, err := queryUsage(ctx, workspace, apiUUID)
 	if err != nil || usage == nil {
 		auth.AbortForbidden(ctx)
 		return
