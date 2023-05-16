@@ -16,6 +16,10 @@ func AdminOnly(ctx *gin.Context) {
 	}
 	claims := GetAuthClaims(ctx)
 	if claims != nil && claims.Type == JWT_TYPE_ADMIN {
+		if env.String("GIN_MODE", "") == "debug" { // skip IP check in debug mode
+			ctx.Next()
+			return
+		}
 		if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
 			AbortUnauthorized(ctx)
 			return
@@ -33,6 +37,10 @@ func UserOnly(ctx *gin.Context) {
 			workspace := micro.GetWorkspace(ctx)
 			if workspace != "" && !claims.HasWorkspace(workspace) {
 				AbortUnauthorized(ctx)
+				return
+			}
+			if env.String("GIN_MODE", "") == "debug" { // skip IP check in debug mode
+				ctx.Next()
 				return
 			}
 			if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
