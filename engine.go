@@ -102,6 +102,10 @@ func newGinServiceHandler[T any](engine *Engine, handler Handler[T]) gin.Handler
 		}
 		resp, err := handlerSetup.Service(ctx)
 		traces := GetTraces(c)
+		overrideCredit := ctx.GinContext.GetFloat64("credit")
+		if overrideCredit > 0 {
+			credit = overrideCredit
+		}
 		if err != nil {
 			traces = append(traces, Trace{
 				Success:    false,
