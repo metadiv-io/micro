@@ -33,10 +33,12 @@ const (
 	ERR_CODE_UNAUTHORIZED          = "b97cf20d-42b6-470e-9e08-b4bb852c3811"
 	ERR_CODE_FORBIDDEN             = "7792176d-0196-4a57-a959-93062c2b9b41"
 	ERR_CODE_INTERNAL_SERVER_ERROR = "b6a82bc6-5884-41e1-8b6f-1a013b7da835"
+	ERR_CODE_WORKSPACE_NOT_FOUND   = "94793665-c9da-48a6-84bb-3dd2fd771419"
 )
 
 func init() {
 	err_map.Register(ERR_CODE_UNAUTHORIZED, "Unauthorized")
 	err_map.Register(ERR_CODE_FORBIDDEN, "Forbidden")
 	err_map.Register(ERR_CODE_INTERNAL_SERVER_ERROR, "Internal Server Error")
+	err_map.Register(ERR_CODE_WORKSPACE_NOT_FOUND, "Workspace Not Found")
 }
