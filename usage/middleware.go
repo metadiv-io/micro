@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/metadiv-io/logger"
 	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/auth"
 	"github.com/metadiv-io/micro/call"
@@ -69,17 +70,22 @@ func UsageRequired(ctx *gin.Context) {
 	}
 	workspace := micro.GetWorkspace(ctx)
 	if workspace == "" {
-		auth.AbortForbidden(ctx)
+		AbortWorkspaceNotFound(ctx)
 		return
 	}
 	apiUUID := micro.GetApiUUID(ctx)
 	if apiUUID == "" {
-		auth.AbortForbidden(ctx)
+		AbortApiUUIDNotFound(ctx)
 		return
 	}
 	usage, err := queryUsage(ctx, workspace, apiUUID)
-	if err != nil || usage == nil {
+	if err != nil {
+		logger.Error("query usage:", err.Error())
 		auth.AbortForbidden(ctx)
+		return
+	}
+	if !usage.Allowed {
+		AbortNotEnoughCredit(ctx)
 		return
 	}
 	addConsumption(workspace, usage.Credit)
