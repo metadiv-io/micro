@@ -47,7 +47,7 @@ func SetWorkspace(c *gin.Context, workspace string) {
 func GetApiUUID(c *gin.Context) string {
 	info, ok := API_MAP[c.Request.Method+":"+c.FullPath()]
 	if ok {
-		return info.Tag
+		return info.UUID
 	}
 	return ""
 }
