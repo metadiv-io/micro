@@ -49,6 +49,9 @@ func queryUsage(ctx *gin.Context, workspaceUUID, apiUUID string) (*UsageResponse
 		if err != nil || resp == nil || !resp.Success {
 			return nil, err
 		}
+		if !resp.Data.Allowed {
+			return resp.Data, nil // return not allowed, no need to cache
+		}
 		if cachedUsage[workspaceUUID] == nil {
 			cachedUsage[workspaceUUID] = make(map[string]*UsageResponse)
 		}
