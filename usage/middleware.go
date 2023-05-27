@@ -91,6 +91,6 @@ func UsageRequired(ctx *gin.Context) {
 		AbortNotEnoughCredit(ctx)
 		return
 	}
-	addConsumption(workspace, usage.Credit)
+	addConsumption(usage.SubscriptionUUID, usage.Credit)
 	ctx.Next()
 }
