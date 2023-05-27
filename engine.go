@@ -17,15 +17,16 @@ type Engine struct {
 }
 
 func NewEngine() *Engine {
-	return &Engine{
+	e := &Engine{
 		GinEngine:  gin.Default(),
 		CronWorker: cron.New(),
 	}
+	GET(e, "/ping", "fe37e612-7f0c-463f-8312-b4897fa14a3f", PingHandler, ginmid.RateLimited(time.Minute, 30))
+	return e
 }
 
 func (e *Engine) Run(addr string) {
 	e.CronWorker.Start()
-	GET(e, "/ping", "fe37e612-7f0c-463f-8312-b4897fa14a3f", PingHandler, ginmid.RateLimited(time.Minute, 30))
 	e.GinEngine.Run(addr)
 }
 
