@@ -85,8 +85,6 @@ github.com/metadiv-io/ginmid v1.0.1 h1:VgAs/N3kWhLiKhHVxWLJwP9TAIebO11reZAigm9QH
 github.com/metadiv-io/ginmid v1.0.1/go.mod h1:PER0kTbBU8BPHuEa7Ca2cRAtfgqWojEjFCepWgPKS6I=
 github.com/metadiv-io/logger v1.0.0 h1:yp3Ox7gXxltQLMcsvFv+Vmrzxgo6OYIzn49C1p9Bdtk=
 github.com/metadiv-io/logger v1.0.0/go.mod h1:DKbL4q1fperJyDGf9udbu2BF2VmJv4DcBVgd0M1oR6o=
-github.com/metadiv-io/pwd v1.0.0 h1:xwinoo/66vx9CzL6eOmyRYqMttT2gzMqIutOwmREF7c=
-github.com/metadiv-io/pwd v1.0.0/go.mod h1:nnm85N6KfMTCnYKZv4T2LyGZdTEGAbwkATkhOA38BE0=
 github.com/metadiv-io/sql v1.0.0 h1:AVJ27/WV9jgthQ7uGWjdxcRb5cg6Qy6Py/aNPVKSKOc=
 github.com/metadiv-io/sql v1.0.0/go.mod h1:JcqN+pft6YEsOeoSHMYMu1dOTAg8OKLz/y3s5iMU0Yo=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/metadiv-io/pwd"
 )
 
 type JwtClaim struct {
@@ -36,7 +35,7 @@ func (c *JwtClaim) HasWorkspace(workspace string) bool {
 	return false
 }
 
-func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token string, refreshToken string, refreshTokenHash string, err error) {
+func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
 		UUID:       uuid,
@@ -47,12 +46,12 @@ func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token strin
 	}
 	token, err = issueToken(&claims, privatePEM)
 	if err != nil {
-		return "", "", "", fmt.Errorf("issue token: %w", err)
+		return "", "", fmt.Errorf("issue token: %w", err)
 	}
-	return token, refreshToken, pwd.Hash(token + refreshToken), nil
+	return token, refreshToken, nil
 }
 
-func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []string) (token string, refreshToken string, refreshTokenHash string, err error) {
+func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
 		UUID:       uuid,
@@ -63,9 +62,9 @@ func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []
 	}
 	token, err = issueToken(&claims, privatePEM)
 	if err != nil {
-		return "", "", "", fmt.Errorf("issue token: %w", err)
+		return "", "", fmt.Errorf("issue token: %w", err)
 	}
-	return token, refreshToken, pwd.Hash(token + refreshToken), nil
+	return token, refreshToken, nil
 }
 
 func NewApiToken(privatePEM, uuid, name string, ips []string, workspaces []string) (token string, err error) {
