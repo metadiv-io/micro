@@ -10,11 +10,12 @@ import (
 )
 
 type JwtClaim struct {
-	UUID       string   `json:"uuid"`
-	Name       string   `json:"name"`
-	Type       string   `json:"type"`
-	IPs        []string `json:"ips"`
-	Workspaces []string `json:"workspaces"`
+	UUID             string   `json:"uuid"`
+	Name             string   `json:"name"`
+	Type             string   `json:"type"`
+	IPs              []string `json:"ips"`
+	Workspaces       []string `json:"workspaces"`        // workspaces that user owns
+	MemberWorkspaces []string `json:"member_workspaces"` // workspaces that user is a member of
 }
 
 func (c *JwtClaim) HasIP(ip string) bool {
@@ -26,8 +27,24 @@ func (c *JwtClaim) HasIP(ip string) bool {
 	return false
 }
 
+// HasWorkspace checks if the user has access to the workspace (as owner or member)
 func (c *JwtClaim) HasWorkspace(workspace string) bool {
 	for _, v := range c.Workspaces {
+		if v == workspace {
+			return true
+		}
+	}
+	for _, v := range c.MemberWorkspaces {
+		if v == workspace {
+			return true
+		}
+	}
+	return false
+}
+
+// OwnWorkspace checks if the user owns the workspace
+func (s *JwtClaim) OwnWorkspace(workspace string) bool {
+	for _, v := range s.Workspaces {
 		if v == workspace {
 			return true
 		}
