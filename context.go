@@ -66,5 +66,11 @@ func (ctx *Context[T]) Error(err err_map.Error, traceID string, traces []Trace) 
 		},
 	}
 	ctx.Response = resp // for testing
+
+	if err.Code() == "b97cf20d-42b6-470e-9e08-b4bb852c3811" {
+		ctx.GinContext.JSON(401, resp)
+		return
+	}
+
 	ctx.GinContext.JSON(200, resp)
 }
