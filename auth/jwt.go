@@ -20,6 +20,9 @@ type JwtClaim struct {
 
 func (c *JwtClaim) HasIP(ip string) bool {
 	for _, v := range c.IPs {
+		if v == "*" {
+			return true
+		}
 		if v == ip {
 			return true
 		}
