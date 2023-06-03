@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -55,13 +54,13 @@ func (s *JwtClaim) OwnWorkspace(workspace string) bool {
 	return false
 }
 
-func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token string, refreshToken string, err error) {
+func NewAdminToken(privatePEM, uuid, name string, ips []string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
 		UUID:             uuid,
 		Name:             name,
 		Type:             JWT_TYPE_ADMIN,
-		IPs:              []string{ctx.ClientIP()},
+		IPs:              ips,
 		Workspaces:       []string{}, // admin has no workspace
 		MemberWorkspaces: []string{}, // admin has no member workspace
 	}
@@ -72,13 +71,13 @@ func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token strin
 	return token, refreshToken, nil
 }
 
-func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []string, memberWorkspaces []string) (token string, refreshToken string, err error) {
+func NewUserToken(privatePEM, uuid, name string, ips []string, workspaces []string, memberWorkspaces []string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
 		UUID:             uuid,
 		Name:             name,
 		Type:             JWT_TYPE_USER,
-		IPs:              []string{ctx.ClientIP()},
+		IPs:              ips,
 		Workspaces:       workspaces,
 		MemberWorkspaces: memberWorkspaces,
 	}
