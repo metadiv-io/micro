@@ -55,11 +55,12 @@ func (s *JwtClaim) OwnWorkspace(workspace string) bool {
 func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
-		UUID:       uuid,
-		Name:       name,
-		Type:       JWT_TYPE_ADMIN,
-		IPs:        []string{ctx.ClientIP()},
-		Workspaces: []string{}, // admin has no workspace
+		UUID:             uuid,
+		Name:             name,
+		Type:             JWT_TYPE_ADMIN,
+		IPs:              []string{ctx.ClientIP()},
+		Workspaces:       []string{}, // admin has no workspace
+		MemberWorkspaces: []string{}, // admin has no member workspace
 	}
 	token, err = issueToken(&claims, privatePEM)
 	if err != nil {
@@ -68,14 +69,15 @@ func NewAdminToken(ctx *gin.Context, privatePEM, uuid, name string) (token strin
 	return token, refreshToken, nil
 }
 
-func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []string) (token string, refreshToken string, err error) {
+func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []string, memberWorkspaces []string) (token string, refreshToken string, err error) {
 	refreshToken = randString()
 	claims := JwtClaim{
-		UUID:       uuid,
-		Name:       name,
-		Type:       JWT_TYPE_USER,
-		IPs:        []string{ctx.ClientIP()},
-		Workspaces: workspaces,
+		UUID:             uuid,
+		Name:             name,
+		Type:             JWT_TYPE_USER,
+		IPs:              []string{ctx.ClientIP()},
+		Workspaces:       workspaces,
+		MemberWorkspaces: memberWorkspaces,
 	}
 	token, err = issueToken(&claims, privatePEM)
 	if err != nil {
@@ -84,13 +86,14 @@ func NewUserToken(ctx *gin.Context, privatePEM, uuid, name string, workspaces []
 	return token, refreshToken, nil
 }
 
-func NewApiToken(privatePEM, uuid, name string, ips []string, workspaces []string) (token string, err error) {
+func NewApiToken(privatePEM, uuid, name string, ips []string, workspaces []string, memberWorkspaces []string) (token string, err error) {
 	claims := JwtClaim{
-		UUID:       uuid,
-		Name:       name,
-		Type:       JWT_TYPE_API,
-		IPs:        ips,
-		Workspaces: workspaces,
+		UUID:             uuid,
+		Name:             name,
+		Type:             JWT_TYPE_API,
+		IPs:              ips,
+		Workspaces:       workspaces,
+		MemberWorkspaces: memberWorkspaces,
 	}
 	token, err = issueToken(&claims, privatePEM)
 	if err != nil {
