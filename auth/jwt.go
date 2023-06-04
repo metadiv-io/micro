@@ -124,12 +124,17 @@ func ParseToken(token string, publicPEM string) (claims *JwtClaim, err error) {
 	for _, v := range mapClaims["workspaces"].([]interface{}) {
 		workspaces = append(workspaces, v.(string))
 	}
+	var memberWorkspaces = make([]string, 0)
+	for _, v := range mapClaims["member_workspaces"].([]interface{}) {
+		memberWorkspaces = append(memberWorkspaces, v.(string))
+	}
 	claims = &JwtClaim{
-		UUID:       mapClaims["uuid"].(string),
-		Name:       mapClaims["name"].(string),
-		Type:       mapClaims["type"].(string),
-		IPs:        ips,
-		Workspaces: workspaces,
+		UUID:             mapClaims["uuid"].(string),
+		Name:             mapClaims["name"].(string),
+		Type:             mapClaims["type"].(string),
+		IPs:              ips,
+		Workspaces:       workspaces,
+		MemberWorkspaces: memberWorkspaces,
 	}
 	return claims, nil
 }
@@ -146,6 +151,7 @@ func issueToken(claims *JwtClaim, privatePEM string) (token string, err error) {
 	mapClaims["ips"] = claims.IPs
 	mapClaims["type"] = claims.Type
 	mapClaims["workspaces"] = claims.Workspaces
+	mapClaims["member_workspaces"] = claims.MemberWorkspaces
 	mapClaims["iat"] = now.Unix()
 	mapClaims["exp"] = now.Add(time.Hour).Unix()
 	mapClaims["nbf"] = now.Unix()
