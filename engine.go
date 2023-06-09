@@ -31,43 +31,23 @@ func (e *Engine) Run(addr string) {
 }
 
 func GET[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
-	API_MAP["GET:"+route] = Api{
-		Tag:  "GET:" + route,
-		UUID: uuid,
-	}
 	engine.GinEngine.GET(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
 func GETWithCache[T any](engine *Engine, route, uuid string, cacheDuration time.Duration, handler Handler[T], middleware ...gin.HandlerFunc) {
-	API_MAP["GET:"+route] = Api{
-		Tag:  "GET:" + route,
-		UUID: uuid,
-	}
 	engine.GinEngine.GET(route, joinMiddlewareAndService(
 		ginmid.Cache(cacheDuration, newGinServiceHandler(engine, handler)), middleware...)...)
 }
 
 func POST[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
-	API_MAP["POST:"+route] = Api{
-		Tag:  "POST:" + route,
-		UUID: uuid,
-	}
 	engine.GinEngine.POST(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
 func PUT[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
-	API_MAP["PUT:"+route] = Api{
-		Tag:  "PUT:" + route,
-		UUID: uuid,
-	}
 	engine.GinEngine.PUT(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
 func DELETE[T any](engine *Engine, route, uuid string, handler Handler[T], middleware ...gin.HandlerFunc) {
-	API_MAP["DELETE:"+route] = Api{
-		Tag:  "DELETE:" + route,
-		UUID: uuid,
-	}
 	engine.GinEngine.DELETE(route, joinMiddlewareAndService(newGinServiceHandler(engine, handler), middleware...)...)
 }
 
