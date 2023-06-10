@@ -33,7 +33,7 @@ func AdminOnly(ctx *gin.Context) {
 func UserOnly(ctx *gin.Context) {
 	claims := GetAuthClaims(ctx)
 	if claims != nil {
-		if claims.Type == JWT_TYPE_USER || claims.Type == JWT_TYPE_API {
+		if claims.Type == JWT_TYPE_USER || claims.Type == JWT_TYPE_API || claims.Type == JWT_TYPE_WORKSPACE_USER {
 			workspace := micro.GetWorkspace(ctx)
 			if workspace != "" && !claims.HasWorkspace(workspace) {
 				AbortUnauthorized(ctx)
