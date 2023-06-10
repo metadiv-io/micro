@@ -2,26 +2,27 @@ package auth
 
 import (
 	"github.com/metadiv-io/logger"
-	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/call"
+	"github.com/metadiv-io/micro/system"
+	"github.com/metadiv-io/micro/types"
 )
 
 type RegisterRequest struct {
 	SystemUUID string               `json:"system_uuid"`
 	SystemName string               `json:"system_name"`
-	ApiMap     map[string]micro.Api `json:"api_map"`
+	ApiMap     map[string]types.Api `json:"api_map"`
 }
 
 type RegisterResponse struct {
-	ApiMap       map[string]micro.Api `json:"api_map"`
+	ApiMap       map[string]types.Api `json:"api_map"`
 	JwtPublicPem string               `json:"jwt_public_pem"`
 }
 
-func registerCron() {
-	resp, err := call.POST[RegisterResponse](nil, AUTH_SERVICE_URL+"/register", &RegisterRequest{
-		SystemUUID: micro.SYSTEM_UUID,
-		SystemName: micro.SYSTEM_NAME,
-		ApiMap:     micro.API_MAP,
+func RegisterCron() {
+	resp, err := call.POST[RegisterResponse](nil, system.AUTH_SERVICE_URL+"/register", &RegisterRequest{
+		SystemUUID: system.SYSTEM_UUID,
+		SystemName: system.SYSTEM_NAME,
+		ApiMap:     types.API_MAP,
 	}, map[string]string{})
 	if err != nil {
 		logger.Error("register cron", err.Error())
@@ -35,13 +36,13 @@ func registerCron() {
 		logger.Error("register cron", resp.Error.Message)
 		return
 	}
-	micro.API_MAP = resp.Data.ApiMap
-	JWT_PUBLIC_PEM = resp.Data.JwtPublicPem
+	types.API_MAP = resp.Data.ApiMap
+	system.JWT_PUBLIC_PEM = resp.Data.JwtPublicPem
 }
 
-func SetupRegisterCron(e *micro.Engine, initExec bool) {
-	if initExec {
-		registerCron()
-	}
-	micro.Cron(e, "@every 1m", registerCron)
-}
+// func SetupRegisterCron(e *engine.Engine, initExec bool) {
+// 	if initExec {
+// 		registerCron()
+// 	}
+// 	micro.Cron(e, "@every 1m", registerCron)
+// }

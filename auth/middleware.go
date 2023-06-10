@@ -5,8 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/metadiv-io/env"
-	"github.com/metadiv-io/micro"
 	"github.com/metadiv-io/micro/call"
+	"github.com/metadiv-io/micro/ginhelp"
+	"github.com/metadiv-io/micro/header"
+	"github.com/metadiv-io/micro/jwt"
+	"github.com/metadiv-io/micro/system"
 )
 
 func AdminOnly(ctx *gin.Context) {
@@ -14,37 +17,37 @@ func AdminOnly(ctx *gin.Context) {
 		ctx.Next()
 		return
 	}
-	claims := GetAuthClaims(ctx)
-	if claims != nil && claims.Type == JWT_TYPE_ADMIN {
+	claims := header.GetAuthClaims(ctx)
+	if claims != nil && claims.Type == jwt.TYPE_ADMIN {
 		if env.String("GIN_MODE", "") == "debug" { // skip IP check in debug mode
 			ctx.Next()
 			return
 		}
-		if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
-			AbortUnauthorized(ctx)
+		if claims.IP != ctx.ClientIP() && !isMicro(ctx) {
+			ginhelp.AbortUnauthorized(ctx)
 			return
 		}
 		ctx.Next()
 		return
 	}
-	AbortUnauthorized(ctx)
+	ginhelp.AbortUnauthorized(ctx)
 }
 
 func UserOnly(ctx *gin.Context) {
-	claims := GetAuthClaims(ctx)
+	claims := header.GetAuthClaims(ctx)
 	if claims != nil {
-		if claims.Type == JWT_TYPE_USER || claims.Type == JWT_TYPE_API {
-			workspace := micro.GetWorkspace(ctx)
-			if workspace != "" && !claims.HasWorkspace(workspace) {
-				AbortUnauthorized(ctx)
+		if claims.Type == jwt.TYPE_USER {
+			workspace := header.GetWorkspace(ctx)
+			if workspace != "" && claims.Workspace != workspace {
+				ginhelp.AbortUnauthorized(ctx)
 				return
 			}
 			if env.String("GIN_MODE", "") == "debug" { // skip IP check in debug mode
 				ctx.Next()
 				return
 			}
-			if !claims.HasIP(ctx.ClientIP()) && !isMicro(ctx) {
-				AbortUnauthorized(ctx)
+			if claims.IP != ctx.ClientIP() && !isMicro(ctx) {
+				ginhelp.AbortUnauthorized(ctx)
 				return
 			}
 			ctx.Next()
@@ -55,7 +58,7 @@ func UserOnly(ctx *gin.Context) {
 		ctx.Next()
 		return
 	}
-	AbortUnauthorized(ctx)
+	ginhelp.AbortUnauthorized(ctx)
 }
 
 type IsMicroRequest struct {
@@ -80,7 +83,7 @@ func isMicro(ctx *gin.Context) bool {
 	if isMicroCache[ctx.ClientIP()] {
 		return true
 	}
-	resp, err := call.POST[IsMicroResponse](ctx, AUTH_SERVICE_URL+"/micro", &IsMicroRequest{
+	resp, err := call.POST[IsMicroResponse](ctx, system.AUTH_SERVICE_URL+"/micro", &IsMicroRequest{
 		IP: ctx.ClientIP(),
 	}, nil)
 	if err != nil || resp == nil || !resp.Success {

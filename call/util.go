@@ -6,24 +6,28 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/metadiv-io/micro"
+	"github.com/metadiv-io/micro/constant"
+	"github.com/metadiv-io/micro/header"
+	"github.com/metadiv-io/micro/types"
 )
 
 func get[T any](ctx *gin.Context, url string, params map[string]string, headers map[string]string) (*Response[T], error) {
-	var traceID, workspace string
-	var traces []micro.Trace
+	var traceID, workspace, token string
+	var traces []types.Trace
 	if ctx != nil {
-		traceID = micro.GetTraceID(ctx)
-		traces = micro.GetTraces(ctx)
-		workspace = micro.GetWorkspace(ctx)
+		traceID = header.GetTraceID(ctx)
+		traces = header.GetTraces(ctx)
+		workspace = header.GetWorkspace(ctx)
+		token = header.GetAuthToken(ctx)
 	}
 	if headers == nil {
 		headers = make(map[string]string)
 	}
-	headers[micro.MICRO_HEADER_TRACE_ID] = traceID
+	headers[constant.MICRO_HEADER_TRACE_ID] = traceID
 	tracesStr, _ := json.Marshal(traces)
-	headers[micro.MICRO_HEADER_TRACES] = string(tracesStr)
-	headers[micro.MICRO_HEADER_WORKSPACE] = workspace
+	headers[constant.MICRO_HEADER_TRACES] = string(tracesStr)
+	headers[constant.MICRO_HEADER_WORKSPACE] = workspace
+	headers["Authorization"] = "Bearer " + token
 	url += "?"
 	for k, v := range params {
 		url += k + "=" + v + "&"
@@ -51,29 +55,31 @@ func get[T any](ctx *gin.Context, url string, params map[string]string, headers 
 	}
 
 	if ctx != nil {
-		micro.SetTraceID(ctx, traceID)
-		micro.SetTraces(ctx, response.Traces)
-		micro.SetWorkspace(ctx, workspace)
+		header.SetTraceID(ctx, traceID)
+		header.SetTraces(ctx, response.Traces)
+		header.SetWorkspace(ctx, workspace)
 	}
 
 	return &response, nil
 }
 
 func nonGet[T any](ctx *gin.Context, url string, method string, body interface{}, headers map[string]string) (*Response[T], error) {
-	var traceID, workspace string
-	var traces []micro.Trace
+	var traceID, workspace, token string
+	var traces []types.Trace
 	if ctx != nil {
-		traceID = micro.GetTraceID(ctx)
-		traces = micro.GetTraces(ctx)
-		workspace = micro.GetWorkspace(ctx)
+		traceID = header.GetTraceID(ctx)
+		traces = header.GetTraces(ctx)
+		workspace = header.GetWorkspace(ctx)
+		token = header.GetAuthToken(ctx)
 	}
 	if headers == nil {
 		headers = make(map[string]string)
 	}
-	headers[micro.MICRO_HEADER_TRACE_ID] = traceID
+	headers[constant.MICRO_HEADER_TRACE_ID] = traceID
 	tracesStr, _ := json.Marshal(traces)
-	headers[micro.MICRO_HEADER_TRACES] = string(tracesStr)
-	headers[micro.MICRO_HEADER_WORKSPACE] = workspace
+	headers[constant.MICRO_HEADER_TRACES] = string(tracesStr)
+	headers[constant.MICRO_HEADER_WORKSPACE] = workspace
+	headers["Authorization"] = "Bearer " + token
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -100,9 +106,9 @@ func nonGet[T any](ctx *gin.Context, url string, method string, body interface{}
 	}
 
 	if ctx != nil {
-		micro.SetTraceID(ctx, traceID)
-		micro.SetTraces(ctx, response.Traces)
-		micro.SetWorkspace(ctx, workspace)
+		header.SetTraceID(ctx, traceID)
+		header.SetTraces(ctx, response.Traces)
+		header.SetWorkspace(ctx, workspace)
 	}
 
 	return &response, nil

@@ -3,6 +3,8 @@ package micro
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/metadiv-io/err_map"
+	"github.com/metadiv-io/micro/header"
+	"github.com/metadiv-io/micro/types"
 	"github.com/metadiv-io/sql"
 )
 
@@ -23,54 +25,77 @@ func (ctx *Context[T]) UserAgent() string {
 	return ctx.GinContext.Request.UserAgent()
 }
 
-func (ctx *Context[T]) OK(data interface{}, traceID string, traces []Trace, page ...*sql.Pagination) {
-	var p *sql.Pagination
-	if len(page) > 0 {
-		p = page[0]
+func (ctx *Context[T]) GetTraceID() string {
+	return header.GetTraceID(ctx.GinContext)
+}
+
+func (ctx *Context[T]) SetTraceID(traceID string) {
+	header.SetTraceID(ctx.GinContext, traceID)
+}
+
+func (ctx *Context[T]) GetTraces() []types.Trace {
+	return header.GetTraces(ctx.GinContext)
+}
+
+func (ctx *Context[T]) SetTraces(traces []types.Trace) {
+	header.SetTraces(ctx.GinContext, traces)
+}
+
+func (ctx *Context[T]) GetWorkspace() string {
+	return header.GetWorkspace(ctx.GinContext)
+}
+
+func (ctx *Context[T]) SetWorkspace(workspace string) {
+	header.SetWorkspace(ctx.GinContext, workspace)
+}
+
+func (ctx *Context[T]) OK(data interface{}) {
+	if ctx.Response != nil {
+		panic("Response already set")
 	}
+	traceID := ctx.GetTraceID()
+	traces := ctx.GetTraces()
 	var credit float64
 	var duration uint
 	for _, t := range traces {
 		credit += t.Credit
 		duration += t.Duration
 	}
-	resp := &Response{
+	resp := &types.Response{
 		Success:    true,
 		Data:       data,
 		Duration:   duration,
 		Credit:     credit,
-		Pagination: p,
+		Pagination: ctx.Page,
 		TraceID:    traceID,
 		Traces:     traces,
 	}
-	ctx.Response = resp // for testing
-	ctx.GinContext.JSON(200, resp)
+	ctx.Response = resp
 }
 
-func (ctx *Context[T]) Error(err err_map.Error, traceID string, traces []Trace) {
+func (ctx *Context[T]) Error(errCode string) {
+	if ctx.Response != nil {
+		panic("Response already set")
+	}
+	traceID := ctx.GetTraceID()
+	traces := ctx.GetTraces()
+	err := err_map.NewError(errCode)
 	var credit float64
 	var duration uint
 	for _, t := range traces {
 		credit += t.Credit
 		duration += t.Duration
 	}
-	resp := &Response{
+	resp := &types.Response{
 		Success:  false,
 		TraceID:  traceID,
 		Duration: duration,
 		Credit:   credit,
 		Traces:   traces,
-		Error: &Error{
+		Error: &types.ErrorImpl{
 			Code:    err.Code(),
 			Message: err.Error(),
 		},
 	}
-	ctx.Response = resp // for testing
-
-	if err.Code() == "b97cf20d-42b6-470e-9e08-b4bb852c3811" {
-		ctx.GinContext.JSON(401, resp)
-		return
-	}
-
-	ctx.GinContext.JSON(200, resp)
+	ctx.Response = resp
 }

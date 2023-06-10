@@ -1,34 +1,13 @@
-package auth
+package constant
 
-import (
-	"github.com/metadiv-io/env"
-	"github.com/metadiv-io/err_map"
-)
+import "github.com/metadiv-io/err_map"
 
-var (
-	AUTH_SERVICE_URL string
-)
-
-func init() {
-	AUTH_SERVICE_URL = env.String("AUTH_SERVICE_URL", "")
-	if AUTH_SERVICE_URL == "" {
-		panic("AUTH_SERVICE_URL is required")
-	}
-}
-
-// These are the types of jwt tokens.
 const (
-	JWT_TYPE_ADMIN = "admin"
-	JWT_TYPE_USER  = "user"
-	JWT_TYPE_API   = "api"
+	MICRO_HEADER_TRACE_ID  = "Micro-TraceID"
+	MICRO_HEADER_TRACES    = "Micro-Traces"
+	MICRO_HEADER_WORKSPACE = "Micro-Workspace"
 )
 
-// This is the jwt public key.
-var (
-	JWT_PUBLIC_PEM string
-)
-
-// These are the errors will be used in all the services.
 const (
 	ERR_CODE_UNAUTHORIZED          = "b97cf20d-42b6-470e-9e08-b4bb852c3811"
 	ERR_CODE_FORBIDDEN             = "7792176d-0196-4a57-a959-93062c2b9b41"
@@ -41,4 +20,14 @@ func init() {
 	err_map.Register(ERR_CODE_FORBIDDEN, "Forbidden")
 	err_map.Register(ERR_CODE_INTERNAL_SERVER_ERROR, "Internal Server Error")
 	err_map.Register(ERR_CODE_WORKSPACE_NOT_FOUND, "Workspace Not Found")
+}
+
+const (
+	ERR_CODE_API_UUID_NOT_FOUND = "bff74b7c-09e3-4219-a2c2-1727e248c1f7"
+	ERR_CODE_NOT_ENOUGH_CREDIT  = "7c04a968-6827-4332-bdfd-3642b8bda40e"
+)
+
+func init() {
+	err_map.Register(ERR_CODE_API_UUID_NOT_FOUND, "Api UUID Not Found")
+	err_map.Register(ERR_CODE_NOT_ENOUGH_CREDIT, "Not Enough Credit")
 }

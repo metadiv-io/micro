@@ -1,9 +1,15 @@
-package micro
+package ginhelp
 
 import (
 	"reflect"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	tag_uri  = "uri"
+	tag_json = "json"
+	tag_form = "form"
 )
 
 // GinRequest get the request from gin context

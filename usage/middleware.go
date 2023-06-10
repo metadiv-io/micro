@@ -5,9 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/metadiv-io/logger"
-	"github.com/metadiv-io/micro"
-	"github.com/metadiv-io/micro/auth"
 	"github.com/metadiv-io/micro/call"
+	"github.com/metadiv-io/micro/ginhelp"
+	"github.com/metadiv-io/micro/header"
+	"github.com/metadiv-io/micro/system"
+	"github.com/metadiv-io/micro/types"
 )
 
 type UsageResponse struct {
@@ -42,7 +44,7 @@ func queryUsage(ctx *gin.Context, workspaceUUID, apiUUID string) (*UsageResponse
 	}
 
 	if askUsage {
-		resp, err := call.GET[UsageResponse](nil, USAGE_SERVICE_URL+"/usage", map[string]string{
+		resp, err := call.GET[UsageResponse](nil, system.USAGE_SERVICE_URL+"/usage", map[string]string{
 			"workspace_uuid": workspaceUUID,
 			"api_uuid":       apiUUID,
 		}, nil)
@@ -56,9 +58,9 @@ func queryUsage(ctx *gin.Context, workspaceUUID, apiUUID string) (*UsageResponse
 			cachedUsage[workspaceUUID] = make(map[string]*UsageResponse)
 		}
 		cachedUsage[workspaceUUID][apiUUID] = resp.Data
-		api := micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
+		api := types.API_MAP[ctx.Request.Method+":"+ctx.FullPath()]
 		api.Credit = resp.Data.Credit
-		micro.API_MAP[ctx.Request.Method+":"+ctx.FullPath()] = api
+		types.API_MAP[ctx.Request.Method+":"+ctx.FullPath()] = api
 		return resp.Data, nil
 	}
 
@@ -66,29 +68,29 @@ func queryUsage(ctx *gin.Context, workspaceUUID, apiUUID string) (*UsageResponse
 }
 
 func UsageRequired(ctx *gin.Context) {
-	claims := auth.GetAuthClaims(ctx)
+	claims := header.GetAuthClaims(ctx)
 	if claims == nil {
-		auth.AbortUnauthorized(ctx)
+		ginhelp.AbortUnauthorized(ctx)
 		return
 	}
-	workspace := micro.GetWorkspace(ctx)
+	workspace := header.GetWorkspace(ctx)
 	if workspace == "" {
-		AbortWorkspaceNotFound(ctx)
+		ginhelp.AbortWorkspaceNotFound(ctx)
 		return
 	}
-	apiUUID := micro.GetApiUUID(ctx)
+	apiUUID := header.GetApiUUID(ctx)
 	if apiUUID == "" {
-		AbortApiUUIDNotFound(ctx)
+		ginhelp.AbortApiUUIDNotFound(ctx)
 		return
 	}
 	usage, err := queryUsage(ctx, workspace, apiUUID)
 	if err != nil {
 		logger.Error("query usage:", err.Error())
-		auth.AbortForbidden(ctx)
+		ginhelp.AbortForbidden(ctx)
 		return
 	}
 	if !usage.Allowed {
-		AbortNotEnoughCredit(ctx)
+		ginhelp.AbortNotEnoughCredit(ctx)
 		return
 	}
 	addConsumption(usage.SubscriptionUUID, usage.Credit)
