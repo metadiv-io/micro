@@ -46,7 +46,7 @@ func UserOnly(ctx *gin.Context) {
 				ctx.Next()
 				return
 			}
-			if claims.IP != ctx.ClientIP() && !isMicro(ctx) {
+			if claims.IP != ctx.ClientIP() && claims.IP != "*" && !isMicro(ctx) {
 				ginhelp.AbortUnauthorized(ctx)
 				return
 			}

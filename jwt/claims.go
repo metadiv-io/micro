@@ -1,8 +1,9 @@
 package jwt
 
 const (
-	TYPE_ADMIN = "admin"
-	TYPE_USER  = "user"
+	TYPE_ADMIN          = "admin"
+	TYPE_USER           = "user"
+	TYPE_WORKSPACE_user = "workspace_user"
 )
 
 type Claims struct {
