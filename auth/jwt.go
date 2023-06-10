@@ -88,6 +88,23 @@ func NewUserToken(privatePEM, uuid, name string, ips []string, workspaces []stri
 	return token, refreshToken, nil
 }
 
+func NewWorkspaceUserToken(privatePEM, uuid, name string, ips []string, workspaces string) (token string, refreshToken string, err error) {
+	refreshToken = randString()
+	claims := JwtClaim{
+		UUID:             uuid,
+		Name:             name,
+		Type:             JWT_TYPE_WORKSPACE_USER,
+		IPs:              ips,
+		Workspaces:       []string{workspaces},
+		MemberWorkspaces: []string{},
+	}
+	token, err = issueToken(&claims, privatePEM)
+	if err != nil {
+		return "", "", fmt.Errorf("issue token: %w", err)
+	}
+	return token, refreshToken, nil
+}
+
 func NewApiToken(privatePEM, uuid, name string, ips []string, workspaces []string, memberWorkspaces []string) (token string, err error) {
 	claims := JwtClaim{
 		UUID:             uuid,

@@ -18,9 +18,10 @@ func init() {
 
 // These are the types of jwt tokens.
 const (
-	JWT_TYPE_ADMIN = "admin"
-	JWT_TYPE_USER  = "user"
-	JWT_TYPE_API   = "api"
+	JWT_TYPE_ADMIN          = "admin"
+	JWT_TYPE_USER           = "user"
+	JWT_TYPE_WORKSPACE_USER = "workspace_user"
+	JWT_TYPE_API            = "api"
 )
 
 // This is the jwt public key.
